@@ -12,19 +12,32 @@ class RegionController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        return $regiones = Region::all();
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+        // if (!$request->ajax()) return redirect('/');
+ 
+        $buscar = $request->buscar;
+        $filtro = $request->filtro;
+         
+        if ($buscar==''){
+            $regiones = Region::orderBy('id', 'asc')->paginate(15);
+        }
+        else{
+            $regiones = Region::where($filtro, 'like', '%'. $buscar . '%')->orderBy('id', 'asc')->paginate(3);
+        }
+         
+ 
+        return [
+            'pagination' => [
+                'total'        => $regiones->total(),
+                'current_page' => $regiones->currentPage(),
+                'per_page'     => $regiones->perPage(),
+                'last_page'    => $regiones->lastPage(),
+                'from'         => $regiones->firstItem(),
+                'to'           => $regiones->lastItem(),
+            ],
+            'regiones' => $regiones
+        ];
     }
 
     /**
@@ -35,29 +48,12 @@ class RegionController extends Controller
      */
     public function store(Request $request)
     {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Region  $region
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Region $region)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Region  $region
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Region $region)
-    {
-        //
+        if (!$request->ajax()) return redirect('/');
+        $region = new Region();
+        $region->nombre = $request->nombre;
+        $region->sede = $request->sede;
+        $region->coordinador = $request->coordinador;
+        $region->save();
     }
 
     /**
@@ -69,7 +65,12 @@ class RegionController extends Controller
      */
     public function update(Request $request, Region $region)
     {
-        //
+        if (!$request->ajax()) return redirect('/');
+        $region = Region::findOrFail($request->id);
+        $region->nombre = $request->nombre;
+        $region->sede = $request->sede;
+        $region->coordinador = $request->coordinador;
+        $region->save();
     }
 
     /**
@@ -78,8 +79,9 @@ class RegionController extends Controller
      * @param  \App\Region  $region
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Region $region)
+    public function destroy(Request $request)
     {
-        //
+        if (!$request->ajax()) return redirect('/');
+        Region::findOrFail($request->id)->delete();
     }
 }

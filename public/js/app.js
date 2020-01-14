@@ -1953,13 +1953,6 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
-//
-//
-//
-//
-//
-//
-//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   data: function data() {
@@ -1967,10 +1960,11 @@ __webpack_require__.r(__webpack_exports__);
       mostrarMR: false,
       accion: 0,
       tituloVentana: '',
-      arrayCategorias: [],
+      arrayRegiones: [],
       id: 0,
       nombre: '',
-      descripcion: '',
+      sede: '',
+      coordinador: '',
       estado: '',
       pagination: {
         'total': 0,
@@ -1981,7 +1975,7 @@ __webpack_require__.r(__webpack_exports__);
         'to': 0
       },
       offset: 3,
-      filtro: "name",
+      filtro: "nombre",
       buscar: ''
     };
   },
@@ -2024,9 +2018,10 @@ __webpack_require__.r(__webpack_exports__);
       switch (accion) {
         case 0:
           {
-            this.tituloVentana = 'Nueva categoria';
+            this.tituloVentana = 'Nueva region';
             this.nombre = '';
-            this.descripcion = '';
+            this.sede = '';
+            this.coordinador = '';
             this.mostrarMR = true;
             this.accion = 0;
             break;
@@ -2034,22 +2029,30 @@ __webpack_require__.r(__webpack_exports__);
 
         case 1:
           {
-            this.tituloVentana = 'Actualizar categoria';
+            this.tituloVentana = 'Actualizar región';
             this.nombre = data['nombre'];
-            this.descripcion = data['descripcion'];
-            this.id = data['_id'].$oid;
+            this.sede = data['sede'];
+            this.coordinador = data['coordinador'];
+            this.id = data['id'];
             this.mostrarMR = true;
             this.accion = 1;
             break;
+            /* this.modal=1;
+            this.tituloModal='Actualizar categoría';
+            this.tipoAccion=2;
+            this.categoria_id=data['id'];
+            this.nombre = data['nombre'];
+            this.descripcion= data['descripcion'];
+            break; */
           }
       }
     },
-    listarCategorias: function listarCategorias(page, buscar, filtro) {
+    listarRegiones: function listarRegiones(page, buscar, filtro) {
       var me = this;
-      var url = '/categoria?page=' + page + '&buscar=' + buscar + '&filtro=' + filtro;
+      var url = '/region?page=' + page + '&buscar=' + buscar + '&filtro=' + filtro;
       axios.get(url).then(function (response) {
         var respuesta = response.data;
-        me.arrayCategorias = respuesta.categorias.data;
+        me.arrayRegiones = respuesta.regiones.data;
         me.pagination = respuesta.pagination;
       })["catch"](function (error) {
         console.log(error);
@@ -2060,23 +2063,24 @@ __webpack_require__.r(__webpack_exports__);
 
       me.pagination.current_page = page; //Envia la petición para visualizar la data de esa página
 
-      me.listarCategorias(page, buscar, filtro);
+      me.listarRegiones(page, buscar, filtro);
     },
-    registrarCategoria: function registrarCategoria() {
+    registrarRegion: function registrarRegion() {
       var me = this;
-      axios.post('/categoria/registrar', {
+      axios.post('/region/registrar', {
         'nombre': this.nombre,
-        'descripcion': this.descripcion
+        'sede': this.sede,
+        'coordinador': this.coordinador
       }).then(function (response) {
         sweetalert2__WEBPACK_IMPORTED_MODULE_0___default.a.fire({
           position: 'top-end',
           type: 'success',
-          title: 'Categoria agregada con exito!',
+          title: 'Región agregada con exito!',
           showConfirmButton: false,
           timer: 1500
         });
         me.mostrarMR = false;
-        me.listarCategorias(1, '', 'nombre');
+        me.listarRegiones(1, '', 'nombre');
       })["catch"](function (error) {
         sweetalert2__WEBPACK_IMPORTED_MODULE_0___default.a.fire({
           position: 'top-end',
@@ -2085,22 +2089,23 @@ __webpack_require__.r(__webpack_exports__);
         });
       });
     },
-    actualizarCategoria: function actualizarCategoria() {
+    actualizarRegion: function actualizarRegion() {
       var me = this;
-      axios.put('/categoria/actualizar', {
+      axios.put('/region/actualizar', {
         'nombre': this.nombre,
-        'descripcion': this.descripcion,
+        'sede': this.sede,
+        'coordinador': this.coordinador,
         'id': this.id
       }).then(function (response) {
         sweetalert2__WEBPACK_IMPORTED_MODULE_0___default.a.fire({
           position: 'top-end',
           type: 'success',
-          title: 'Categoria actualizada con exito!',
+          title: 'Región actualizada con exito!',
           showConfirmButton: false,
           timer: 1500
         });
         me.mostrarMR = false;
-        me.listarCategorias(1, '', 'nombre');
+        me.listarRegiones(1, '', 'nombre');
       })["catch"](function (error) {
         sweetalert2__WEBPACK_IMPORTED_MODULE_0___default.a.fire({
           position: 'top-end',
@@ -2109,7 +2114,7 @@ __webpack_require__.r(__webpack_exports__);
         });
       });
     },
-    desactivarCategoria: function desactivarCategoria(id) {
+    desactivarRegion: function desactivarRegion(id) {
       var _this = this;
 
       sweetalert2__WEBPACK_IMPORTED_MODULE_0___default.a.fire({
@@ -2127,13 +2132,13 @@ __webpack_require__.r(__webpack_exports__);
       }).then(function (result) {
         if (result.value) {
           var me = _this;
-          axios.put('/categoria/desactivar', {
+          axios.put('/region/desactivar', {
             'id': id
           }).then(function (response) {
-            me.listarCategorias(1, '', 'nombre');
+            me.listarRegiones(1, '', 'nombre');
             sweetalert2__WEBPACK_IMPORTED_MODULE_0___default.a.fire({
               title: 'Desactivado!',
-              text: 'El registro ha sido desactivado con éxito.',
+              text: 'El registro ha sido borrado con éxito.',
               type: 'success',
               showConfirmButton: false,
               timer: 1500
@@ -2145,7 +2150,7 @@ __webpack_require__.r(__webpack_exports__);
         result.dismiss === sweetalert2__WEBPACK_IMPORTED_MODULE_0___default.a.DismissReason.cancel) {}
       });
     },
-    activarCategoria: function activarCategoria(id) {
+    activarRegion: function activarRegion(id) {
       var _this2 = this;
 
       sweetalert2__WEBPACK_IMPORTED_MODULE_0___default.a.fire({
@@ -2166,7 +2171,7 @@ __webpack_require__.r(__webpack_exports__);
           axios.put('/categoria/activar', {
             'id': id
           }).then(function (response) {
-            me.listarCategorias(1, '', 'nombre');
+            me.listarRegiones(1, '', 'nombre');
             sweetalert2__WEBPACK_IMPORTED_MODULE_0___default.a.fire({
               title: 'Recuperado!',
               text: 'El registro ha sido recuperado con éxito.',
@@ -2183,7 +2188,7 @@ __webpack_require__.r(__webpack_exports__);
     }
   },
   mounted: function mounted() {
-    this.listarCategorias(1, this.buscar, this.filtro);
+    this.listarRegiones(1, this.buscar, this.filtro);
   }
 });
 
@@ -41577,7 +41582,7 @@ var render = function() {
           _c("div", { staticClass: "card" }, [
             _c("div", { staticClass: "card-header" }, [
               _c("i", { staticClass: "fa fa-align-justify" }),
-              _vm._v(" Categorias\n                    "),
+              _vm._v(" Regiones\n                    "),
               _c(
                 "button",
                 {
@@ -41633,8 +41638,14 @@ var render = function() {
                           _vm._v("Nombre")
                         ]),
                         _vm._v(" "),
-                        _c("option", { attrs: { value: "descripcion" } }, [
-                          _vm._v("Descripcion")
+                        _c(
+                          "option",
+                          { attrs: { selected: "", value: "sede" } },
+                          [_vm._v("Sede")]
+                        ),
+                        _vm._v(" "),
+                        _c("option", { attrs: { value: "coordinador" } }, [
+                          _vm._v("Coordinador")
                         ])
                       ]
                     ),
@@ -41665,7 +41676,7 @@ var render = function() {
                           ) {
                             return null
                           }
-                          return _vm.listarCategorias(1, _vm.buscar, _vm.filtro)
+                          return _vm.listarRegiones(1, _vm.buscar, _vm.filtro)
                         },
                         input: function($event) {
                           if ($event.target.composing) {
@@ -41683,11 +41694,7 @@ var render = function() {
                         attrs: { type: "submit" },
                         on: {
                           click: function($event) {
-                            return _vm.listarCategorias(
-                              1,
-                              _vm.buscar,
-                              _vm.filtro
-                            )
+                            return _vm.listarRegiones(1, _vm.buscar, _vm.filtro)
                           }
                         }
                       },
@@ -41708,91 +41715,49 @@ var render = function() {
                   _vm._v(" "),
                   _c(
                     "tbody",
-                    _vm._l(_vm.arrayCategorias, function(categoria) {
-                      return _c("tr", { key: categoria._id.$oid }, [
-                        _c(
-                          "td",
-                          [
-                            _c(
-                              "button",
-                              {
-                                staticClass: "btn btn-warning btn-sm",
-                                attrs: { type: "button" },
-                                on: {
-                                  click: function($event) {
-                                    return _vm.abrirModal(1, categoria)
-                                  }
-                                }
-                              },
-                              [_c("i", { staticClass: "icon-pencil" })]
-                            ),
-                            _vm._v("  \n                                "),
-                            categoria.estado
-                              ? [
-                                  _c(
-                                    "button",
-                                    {
-                                      staticClass: "btn btn-danger btn-sm",
-                                      attrs: { type: "button" },
-                                      on: {
-                                        click: function($event) {
-                                          return _vm.desactivarCategoria(
-                                            categoria._id.$oid
-                                          )
-                                        }
-                                      }
-                                    },
-                                    [_c("i", { staticClass: "icon-trash" })]
-                                  )
-                                ]
-                              : [
-                                  _c(
-                                    "button",
-                                    {
-                                      staticClass: "btn btn-success btn-sm",
-                                      attrs: { type: "button" },
-                                      on: {
-                                        click: function($event) {
-                                          return _vm.activarCategoria(
-                                            categoria._id.$oid
-                                          )
-                                        }
-                                      }
-                                    },
-                                    [_c("i", { staticClass: "icon-check" })]
-                                  )
-                                ]
-                          ],
-                          2
-                        ),
-                        _vm._v(" "),
-                        _c("td", {
-                          domProps: { textContent: _vm._s(categoria.nombre) }
-                        }),
-                        _vm._v(" "),
-                        _c("td", {
-                          domProps: {
-                            textContent: _vm._s(categoria.descripcion)
-                          }
-                        }),
-                        _vm._v(" "),
+                    _vm._l(_vm.arrayRegiones, function(region) {
+                      return _c("tr", { key: region.id }, [
                         _c("td", [
-                          categoria.estado
-                            ? _c("div", [
-                                _c(
-                                  "span",
-                                  { staticClass: "badge badge-success" },
-                                  [_vm._v("Activo")]
-                                )
-                              ])
-                            : _c("div", [
-                                _c(
-                                  "span",
-                                  { staticClass: "badge badge-danger" },
-                                  [_vm._v("Desactivado")]
-                                )
-                              ])
-                        ])
+                          _c(
+                            "button",
+                            {
+                              staticClass: "btn btn-warning btn-sm",
+                              attrs: { type: "button" },
+                              on: {
+                                click: function($event) {
+                                  return _vm.abrirModal(1, region)
+                                }
+                              }
+                            },
+                            [_c("i", { staticClass: "icon-pencil" })]
+                          ),
+                          _vm._v("  \n                                "),
+                          _c(
+                            "button",
+                            {
+                              staticClass: "btn btn-danger btn-sm",
+                              attrs: { type: "button" },
+                              on: {
+                                click: function($event) {
+                                  return _vm.desactivarRegion(region.id)
+                                }
+                              }
+                            },
+                            [_c("i", { staticClass: "icon-trash" })]
+                          )
+                        ]),
+                        _vm._v(" "),
+                        _c("td", {
+                          domProps: { textContent: _vm._s(region.nombre) }
+                        }),
+                        _vm._v(" "),
+                        _c("td", {
+                          domProps: { textContent: _vm._s(region.sede) }
+                        }),
+                        _vm._v(" "),
+                        _c("td", {
+                          domProps: { textContent: _vm._s(region.coordinador) }
+                        })
                       ])
                     }),
                     0
@@ -41891,7 +41856,7 @@ var render = function() {
           {
             attrs: {
               active: _vm.mostrarMR,
-              width: "400px",
+              width: "600px",
               height: "300px",
               title: _vm.tituloVentana
             },
@@ -41952,7 +41917,7 @@ var render = function() {
                         _c(
                           "label",
                           { staticClass: "col-md-3 form-control-label" },
-                          [_vm._v("Descripcion")]
+                          [_vm._v("Sede")]
                         ),
                         _vm._v(" "),
                         _c("div", { staticClass: "col-md-9" }, [
@@ -41961,19 +41926,51 @@ var render = function() {
                               {
                                 name: "model",
                                 rawName: "v-model",
-                                value: _vm.descripcion,
-                                expression: "descripcion"
+                                value: _vm.sede,
+                                expression: "sede"
                               }
                             ],
                             staticClass: "form-control",
-                            attrs: { type: "text", placeholder: "Descripcion" },
-                            domProps: { value: _vm.descripcion },
+                            attrs: { type: "text", placeholder: "Sede" },
+                            domProps: { value: _vm.sede },
                             on: {
                               input: function($event) {
                                 if ($event.target.composing) {
                                   return
                                 }
-                                _vm.descripcion = $event.target.value
+                                _vm.sede = $event.target.value
+                              }
+                            }
+                          })
+                        ])
+                      ]),
+                      _vm._v(" "),
+                      _c("div", { staticClass: "form-group row" }, [
+                        _c(
+                          "label",
+                          { staticClass: "col-md-3 form-control-label" },
+                          [_vm._v("Coordinador")]
+                        ),
+                        _vm._v(" "),
+                        _c("div", { staticClass: "col-md-9" }, [
+                          _c("input", {
+                            directives: [
+                              {
+                                name: "model",
+                                rawName: "v-model",
+                                value: _vm.coordinador,
+                                expression: "coordinador"
+                              }
+                            ],
+                            staticClass: "form-control",
+                            attrs: { type: "text", placeholder: "Coordinador" },
+                            domProps: { value: _vm.coordinador },
+                            on: {
+                              input: function($event) {
+                                if ($event.target.composing) {
+                                  return
+                                }
+                                _vm.coordinador = $event.target.value
                               }
                             }
                           })
@@ -41992,7 +41989,7 @@ var render = function() {
                         {
                           staticClass: "btn btn-success",
                           attrs: { type: "button" },
-                          on: { click: _vm.registrarCategoria }
+                          on: { click: _vm.registrarRegion }
                         },
                         [_vm._v("Guardar")]
                       )
@@ -42004,7 +42001,7 @@ var render = function() {
                         {
                           staticClass: "btn btn-success",
                           attrs: { type: "button" },
-                          on: { click: _vm.actualizarCategoria }
+                          on: { click: _vm.actualizarRegion }
                         },
                         [_vm._v("Actualizar")]
                       )
@@ -42026,7 +42023,7 @@ var staticRenderFns = [
     var _c = _vm._self._c || _h
     return _c("ol", { staticClass: "breadcrumb" }, [
       _c("li", { staticClass: "breadcrumb-item" }, [
-        _vm._v("Edicion de Categorias")
+        _vm._v("Edición de Regiones")
       ])
     ])
   },
@@ -42040,9 +42037,9 @@ var staticRenderFns = [
         _vm._v(" "),
         _c("th", [_vm._v("Nombre")]),
         _vm._v(" "),
-        _c("th", [_vm._v("Descripcion")]),
+        _c("th", [_vm._v("Sede")]),
         _vm._v(" "),
-        _c("th", [_vm._v("Estado")])
+        _c("th", [_vm._v("Coordinador")])
       ])
     ])
   }
@@ -54363,7 +54360,8 @@ window.Vue = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default));
 // Vue.component('example-component', require('./components/ExampleComponent.vue').default);
 
-Vue.component('regiones-component', __webpack_require__(/*! ./components/RegionComponent.vue */ "./resources/js/components/RegionComponent.vue")["default"]);
+Vue.component('regiones-component', __webpack_require__(/*! ./components/RegionComponent.vue */ "./resources/js/components/RegionComponent.vue")["default"]); // Vue.component('example-component', require('./components/EjemploComponente.vue').default);
+
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application

@@ -51,11 +51,12 @@ Route::group(['middleware'=>['auth']],function(){
     Route::get('/main', function () {
         return view('content/content');
     })->name('main');
-    Route::get('/regiones', 'RegionController@index');
-    Route::post('/regiones/registrar', 'RegionController@store');
-    Route::put('/regiones/actualizar', 'RegionController@update');
-    Route::put('/regiones/desactivar', 'RegionController@desactivar');
-    Route::put('/regiones/activar', 'RegionController@activar');
+    Route::get('/region', 'RegionController@index');
+    Route::post('/region/registrar', 'RegionController@store');
+    Route::put('/region/actualizar', 'RegionController@update');
+    Route::put('/region/desactivar', 'RegionController@destroy');
+    
+    Route::put('/region/activar', 'RegionController@activar');
     Route::get('/editorial', 'EditorialController@index');
     Route::post('/editorial/registrar', 'EditorialController@store');
     Route::put('/editorial/actualizar', 'EditorialController@update');

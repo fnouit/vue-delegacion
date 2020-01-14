@@ -2,14 +2,14 @@
     <main class="main">
         <!-- Breadcrumb-->
         <ol class="breadcrumb">
-            <li class="breadcrumb-item">Edicion de Categorias</li>
+            <li class="breadcrumb-item">Edición de Regiones</li>
         </ol>
         <div class="container-fluid">
             <div class="animated fadeIn">
                 <!-- Ejemplo de tabla Listado -->
                 <div class="card">
                     <div class="card-header">
-                        <i class="fa fa-align-justify"></i> Categorias
+                        <i class="fa fa-align-justify"></i> Regiones
                         <button type="button" class="btn btn-secondary float-right ml-1" @click="abrirModal(0)">
                             <i class="icon-plus"></i>&nbsp;Nueva
                         </button>
@@ -20,10 +20,11 @@
                                 <div class="input-group">
                                     <select class="form-control col-md-4" v-model="filtro">
                                         <option value="nombre">Nombre</option>
-                                        <option value="descripcion">Descripcion</option>
+                                        <option selected value="sede">Sede</option>
+                                        <option value="coordinador">Coordinador</option>
                                     </select>
-                                    <input type="text" v-model="buscar" @keyup.enter="listarCategorias(1,buscar, filtro)" class="form-control" placeholder="...">
-                                    <button type="submit" @click="listarCategorias(1, buscar, filtro)" class="btn btn-primary"><i class="fa fa-search"></i> Buscar</button>
+                                    <input type="text" v-model="buscar" @keyup.enter="listarRegiones(1,buscar, filtro)" class="form-control" placeholder="...">
+                                    <button type="submit" @click="listarRegiones(1, buscar, filtro)" class="btn btn-primary"><i class="fa fa-search"></i> Buscar</button>
                                 </div>
                             </div>
                         </div>
@@ -32,37 +33,23 @@
                             <tr>
                                 <th>Opciones</th>
                                 <th>Nombre</th>
-                                <th>Descripcion</th>
-                                <th>Estado</th>
+                                <th>Sede</th>
+                                <th>Coordinador</th>
                             </tr>
                             </thead>
                             <tbody>
-                            <tr v-for="categoria in arrayCategorias" :key="categoria._id.$oid">
+                            <tr v-for="region in arrayRegiones" :key="region.id">
                                 <td>
-                                    <button type="button" class="btn btn-warning btn-sm" @click="abrirModal(1, categoria)">
+                                    <button type="button" class="btn btn-warning btn-sm" @click="abrirModal(1, region)">
                                         <i class="icon-pencil"></i>
                                     </button> &nbsp;
-                                    <template v-if="categoria.estado">
-                                        <button type="button" class="btn btn-danger btn-sm" @click="desactivarCategoria(categoria._id.$oid)">
-                                            <i class="icon-trash"></i>
-                                        </button>
-                                    </template>
-                                    <template v-else>
-                                        <button type="button" class="btn btn-success btn-sm" @click="activarCategoria(categoria._id.$oid)">
-                                            <i class="icon-check"></i>
-                                        </button>
-                                    </template>
+                                    <button type="button" class="btn btn-danger btn-sm" @click="desactivarRegion(region.id)">
+                                        <i class="icon-trash"></i>
+                                    </button>
                                 </td>
-                                <td v-text="categoria.nombre"></td>
-                                <td v-text="categoria.descripcion"></td>
-                                <td>
-                                    <div v-if="categoria.estado">
-                                        <span class="badge badge-success">Activo</span>
-                                    </div>
-                                    <div v-else>
-                                        <span class="badge badge-danger">Desactivado</span>
-                                    </div>
-                                </td>
+                                <td v-text="region.nombre"></td>
+                                <td v-text="region.sede"></td>
+                                <td v-text="region.coordinador"></td>
                             </tr>
                             </tbody>
                         </table>
@@ -85,8 +72,8 @@
             </div>
 
             <!-- Zona de Modales o ventanas del CRUD -->
-            <!-- Modal agregar categorias -->
-            <vue-window-modal :active="mostrarMR" width="400px" height="300px" :title="tituloVentana"  v-on:clickClose="mostrarMR=false">
+            <!-- Modal agregar regiones -->
+            <vue-window-modal :active="mostrarMR" width="600px" height="300px" :title="tituloVentana"  v-on:clickClose="mostrarMR=false">
                 <div class="container">
                     <div class="row">
                         <div class="col">
@@ -98,9 +85,15 @@
                                     </div>
                                 </div>
                                 <div class="form-group row">
-                                    <label class="col-md-3 form-control-label">Descripcion</label>
+                                    <label class="col-md-3 form-control-label">Sede</label>
                                     <div class="col-md-9">
-                                        <input type="text" v-model="descripcion" class="form-control" placeholder="Descripcion">
+                                        <input type="text" v-model="sede" class="form-control" placeholder="Sede">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-md-3 form-control-label">Coordinador</label>
+                                    <div class="col-md-9">
+                                        <input type="text" v-model="coordinador" class="form-control" placeholder="Coordinador">
                                     </div>
                                 </div>
                             </form>
@@ -108,8 +101,8 @@
                     </div>
                     <div class="row">
                         <div class="col text-right">
-                            <button type="button" v-if="accion===0" class="btn btn-success" @click="registrarCategoria">Guardar</button>
-                            <button type="button" v-if="accion===1" class="btn btn-success" @click="actualizarCategoria">Actualizar</button>
+                            <button type="button" v-if="accion===0" class="btn btn-success" @click="registrarRegion">Guardar</button>
+                            <button type="button" v-if="accion===1" class="btn btn-success" @click="actualizarRegion">Actualizar</button>
                         </div>
                     </div>
                 </div>
@@ -126,10 +119,11 @@
                 mostrarMR: false,
                 accion: 0,
                 tituloVentana: '',
-                arrayCategorias:[],
+                arrayRegiones:[],
                 id: 0,
                 nombre: '',
-                descripcion: '',
+                sede: '',
+                coordinador: '',
                 estado: '',
                 pagination : {
                     'total' : 0,
@@ -140,7 +134,7 @@
                     'to' : 0,
                 },
                 offset : 3,
-                filtro: "name",
+                filtro: "nombre",
                 buscar: ''
             }
         },
@@ -174,31 +168,41 @@
                 switch(accion){
                     case 0:
                     {
-                        this.tituloVentana = 'Nueva categoria';
+                        this.tituloVentana = 'Nueva region';
                         this.nombre = '';
-                        this.descripcion = '';
+                        this.sede = '';
+                        this.coordinador = '';
                         this.mostrarMR = true;
                         this.accion = 0;
                         break;
                     }
                     case 1:
                     {
-                        this.tituloVentana = 'Actualizar categoria';
+                        this.tituloVentana = 'Actualizar región';
                         this.nombre = data['nombre'];
-                        this.descripcion = data['descripcion'];
-                        this.id = data['_id'].$oid;
+                        this.sede = data['sede'];
+                        this.coordinador = data['coordinador'];
+                        this.id = data['id'];
                         this.mostrarMR = true;
                         this.accion = 1;
                         break;
+
+                                /* this.modal=1;
+                                this.tituloModal='Actualizar categoría';
+                                this.tipoAccion=2;
+                                this.categoria_id=data['id'];
+                                this.nombre = data['nombre'];
+                                this.descripcion= data['descripcion'];
+                                break; */
                     }
                 }
             },
-            listarCategorias(page, buscar, filtro){
+            listarRegiones(page, buscar, filtro){
                 let me = this;
-                let url = '/categoria?page=' + page + '&buscar=' + buscar + '&filtro=' + filtro;
+                let url = '/region?page=' + page + '&buscar=' + buscar + '&filtro=' + filtro;
                 axios.get(url).then(function (response) {                    
                     let respuesta = response.data;
-                    me.arrayCategorias = respuesta.categorias.data;
+                    me.arrayRegiones = respuesta.regiones.data;
                     me.pagination = respuesta.pagination;
                 }).catch(function (error) {
                     console.log(error);
@@ -209,23 +213,24 @@
                 //Actualiza la página actual
                 me.pagination.current_page = page;
                 //Envia la petición para visualizar la data de esa página
-                me.listarCategorias(page, buscar, filtro);
+                me.listarRegiones(page, buscar, filtro);
             },
-            registrarCategoria(){
+            registrarRegion(){
                 let me = this;
-                axios.post('/categoria/registrar',{
+                axios.post('/region/registrar',{
                     'nombre': this.nombre,
-                    'descripcion': this.descripcion
+                    'sede': this.sede,
+                    'coordinador': this.coordinador
                 }).then(function (response) {
                     Swal.fire({
                         position: 'top-end',
                         type: 'success',
-                        title: 'Categoria agregada con exito!',
+                        title: 'Región agregada con exito!',
                         showConfirmButton: false,
                         timer: 1500
                     });
                     me.mostrarMR = false;
-                    me.listarCategorias(1,'','nombre');
+                    me.listarRegiones(1,'','nombre');
                 }).catch(function (error) {
                     Swal.fire({
                         position: 'top-end',
@@ -234,22 +239,23 @@
                     });
                 });
             },
-            actualizarCategoria(){
+            actualizarRegion(){
                 let me = this;
-                axios.put('/categoria/actualizar',{
+                axios.put('/region/actualizar',{
                     'nombre': this.nombre,
-                    'descripcion': this.descripcion,
+                    'sede': this.sede,
+                    'coordinador': this.coordinador,
                     'id': this.id
                 }).then(function (response) {
                     Swal.fire({
                         position: 'top-end',
                         type: 'success',
-                        title: 'Categoria actualizada con exito!',
+                        title: 'Región actualizada con exito!',
                         showConfirmButton: false,
                         timer: 1500
                     });
                     me.mostrarMR = false;
-                    me.listarCategorias(1,'','nombre');
+                    me.listarRegiones(1,'','nombre');
                 }).catch(function (error) {
                     Swal.fire({
                         position: 'top-end',
@@ -258,7 +264,7 @@
                     });
                 })
             },
-            desactivarCategoria(id){
+            desactivarRegion(id){
                 Swal.fire({
                     title: 'Esta seguro de eliminar esta Categoria?',
                     type: 'warning',
@@ -274,13 +280,13 @@
                 }).then((result) => {
                     if (result.value) {
                         let me = this;
-                        axios.put('/categoria/desactivar',{
+                        axios.put('/region/desactivar',{
                             'id': id
                         }).then(function (response) {
-                            me.listarCategorias(1,'','nombre');
+                            me.listarRegiones(1,'','nombre');
                             Swal.fire({
                                 title:'Desactivado!',
-                                text:'El registro ha sido desactivado con éxito.',
+                                text:'El registro ha sido borrado con éxito.',
                                 type:'success',
                                 showConfirmButton: false,
                                 timer: 1500
@@ -295,7 +301,7 @@
                     }
                 });
             },
-            activarCategoria(id){
+            activarRegion(id){
                 Swal.fire({
                     title: 'Esta seguro de recuperar esta Categoria?',
                     type: 'warning',
@@ -314,7 +320,7 @@
                         axios.put('/categoria/activar',{
                             'id': id
                         }).then(function (response) {
-                            me.listarCategorias(1,'','nombre');
+                            me.listarRegiones(1,'','nombre');
                             Swal.fire({
                                 title:'Recuperado!',
                                 text:'El registro ha sido recuperado con éxito.',
@@ -334,7 +340,7 @@
             }
         },
         mounted() {
-            this.listarCategorias(1, this.buscar, this.filtro);
+            this.listarRegiones(1, this.buscar, this.filtro);
         }
     }
 </script>

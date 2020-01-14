@@ -17,7 +17,7 @@
                         <a class="nav-link" href="#"><i class="nav-icon fa fa-users"></i>Regiones</a>
                     </li>
                     <li @click="menu=3" class="nav-item">
-                        <a class="nav-link" href="#"><i class="nav-icon fa fa-columns"></i>Categorias</a>
+                        <a class="nav-link" href="#"><i class="nav-icon fa fa-columns"></i>Delegaciones</a>
                     </li>
                     <li @click="menu=4" class="nav-item">
                         <a class="nav-link" href="#"><i class="nav-icon fa fa-book"></i>Libros</a>
